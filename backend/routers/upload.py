@@ -8,10 +8,12 @@ import io
 import os
 import hashlib
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from .. import models, schemas
-from ..database import get_db
-from ..services import validation
+import models, schemas
+from database import get_db
+from services import validation
 
 router = APIRouter(
     prefix="/projects",

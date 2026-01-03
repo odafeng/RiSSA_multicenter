@@ -2,9 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException, Form
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from typing import List
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from .. import models, schemas
-from ..database import get_db
+import models, schemas
+from database import get_db
 
 router = APIRouter(
     prefix="/projects",

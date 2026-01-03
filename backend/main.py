@@ -1,9 +1,9 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
-from .database import engine, Base, get_db
-from . import models # Ensure models are registered
+from database import engine, Base, get_db
+import models # Ensure models are registered
 from sqlalchemy import text
-from .routers import projects, upload
+from routers import projects, upload
 
 # Create tables
 Base.metadata.create_all(bind=engine)
