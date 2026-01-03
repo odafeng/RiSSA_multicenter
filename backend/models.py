@@ -1,7 +1,10 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from .database import Base
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent))
+from database import Base
 
 class Project(Base):
     __tablename__ = "projects"
