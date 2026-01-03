@@ -1,17 +1,39 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Card, CardContent, CardHeader, CardTitle, Input } from './ui';
 import axios from 'axios';
 import { UploadCloud, Check, X, FileText, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+interface Project {
+    id: number;
+    name: string;
+}
+
 export default function FileUploader() {
+    const [projects, setProjects] = useState<Project[]>([]);
     const [projectId, setProjectId] = useState("");
     const [centerName, setCenterName] = useState("高雄榮總"); // Default to first option
     const [uploaderName, setUploaderName] = useState(""); // New state
     const [file, setFile] = useState<File | null>(null);
     const [uploading, setUploading] = useState(false);
     const [result, setResult] = useState<{ success: boolean, msg: string, report?: any } | null>(null);
+
+    // Fetch projects on mount
+    useEffect(() => {
+        const fetchProjects = async () => {
+            try {
+                const res = await axios.get('/api/projects');
+                setProjects(res.data);
+                if (res.data.length > 0) {
+                    setProjectId(res.data[0].id.toString());
+                }
+            } catch (error) {
+                console.error("Failed to fetch projects:", error);
+            }
+        };
+        fetchProjects();
+    }, []);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -92,8 +114,20 @@ export default function FileUploader() {
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="text-xs uppercase text-muted-foreground font-bold">專案 ID</label>
-                            <Input value={projectId} onChange={e => setProjectId(e.target.value)} placeholder="1" />
+                            <label className="text-xs uppercase text-muted-foreground font-bold">選擇專案</label>
+                            <select
+                                className="flex h-10 w-full rounded-lg border-2 border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 shadow-sm transition-all duration-200 hover:border-slate-300 focus:border-sky-400 focus:ring-4 focus:ring-sky-100 focus:outline-none"
+                                value={projectId}
+                                onChange={e => setProjectId(e.target.value)}
+                            >
+                                {projects.length === 0 ? (
+                                    <option value="">尚無專案</option>
+                                ) : (
+                                    projects.map(p => (
+                                        <option key={p.id} value={p.id}>{p.id}: {p.name}</option>
+                                    ))
+                                )}
+                            </select>
                         </div>
                         <div>
                             <label className="text-xs uppercase text-muted-foreground font-bold">中心名稱</label>
