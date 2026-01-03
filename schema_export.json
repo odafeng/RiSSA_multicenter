@@ -1,0 +1,264 @@
+{
+  "columns": [
+    {
+      "name": "chart_no",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "center_id",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "case_id",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "surgeon_id",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "surgery_date",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "sex",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "age",
+      "required": true,
+      "type": "int"
+    },
+    {
+      "name": "bmi",
+      "required": true,
+      "type": "float"
+    },
+    {
+      "name": "asa_class",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "previous_abd_surgery",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "tumor_site",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "tumor_height_cm",
+      "required": true,
+      "type": "float"
+    },
+    {
+      "name": "tumor_height_source",
+      "required": true,
+      "type": "float"
+    },
+    {
+      "name": "preop_stoma",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "cT_stage",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "cN_stage",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "neoadjuvant_rt",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "neoadjuvant_chemo",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "preop_systemic_chemo_cycles",
+      "required": true,
+      "type": "int"
+    },
+    {
+      "name": "procedure_type",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "add_procedure_any",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "add_procedure_ureteral_stent",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "add_procedure_text",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "specimen_extraction_site",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "protective_stoma",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "blood_loss_ml",
+      "required": true,
+      "type": "float"
+    },
+    {
+      "name": "anastomosis_strategy",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "op_time_min",
+      "required": true,
+      "type": "int"
+    },
+    {
+      "name": "console_time_min",
+      "required": true,
+      "type": "int"
+    },
+    {
+      "name": "conversion",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "air_leak_test",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "icg_test",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "first_flatus_days",
+      "required": true,
+      "type": "int"
+    },
+    {
+      "name": "los_days",
+      "required": true,
+      "type": "int"
+    },
+    {
+      "name": "complication_cd_grade",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "anastomosis_leak",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "al_isrec",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "unplanned_icu",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "death_30d",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "reop_30d",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "readm_30d",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "tumor_size_cm",
+      "required": true,
+      "type": "float"
+    },
+    {
+      "name": "distal_margin_cm",
+      "required": true,
+      "type": "float"
+    },
+    {
+      "name": "crm_positive",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "histology_type",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "pT_stage",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "pN_stage",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "LVI",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "PNI",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "ln_harvested",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "ln_positive",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "TME_complete_grade",
+      "required": true,
+      "type": "string"
+    }
+  ]
+}
