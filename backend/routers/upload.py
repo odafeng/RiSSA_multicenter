@@ -1,9 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 import pandas as pd
 import json
 import io
+import os
+import hashlib
+from pathlib import Path
 
 from .. import models, schemas
 from ..database import get_db
@@ -15,7 +19,33 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-@router.post("/{project_id}/submissions", response_model=schemas.SubmissionResponse)
+# Directory to store EDA reports
+REPORTS_DIR = Path(__file__).parent.parent / "reports"
+REPORTS_DIR.mkdir(exist_ok=True)
+
+def generate_eda_report(df: pd.DataFrame, submission_id: int) -> str:
+    """Generate EDA report using ydata-profiling and return the file path."""
+    try:
+        from ydata_profiling import ProfileReport
+        
+        report_filename = f"eda_report_{submission_id}.html"
+        report_path = REPORTS_DIR / report_filename
+        
+        # Generate minimal report for performance
+        profile = ProfileReport(
+            df, 
+            title=f"EDA Report - Submission {submission_id}",
+            minimal=True,
+            explorative=True
+        )
+        profile.to_file(report_path)
+        
+        return f"/api/reports/{report_filename}"
+    except Exception as e:
+        print(f"EDA report generation failed: {e}")
+        return None
+
+@router.post("/{project_id}/submissions")
 async def upload_submission(
     project_id: int, 
     center_name: str = Form(...),
@@ -38,10 +68,21 @@ async def upload_submission(
         raise HTTPException(status_code=400, detail="格式錯誤: 只允許上傳 CSV 檔案 (.csv)")
     
     contents = await file.read()
+    file_size = len(contents)
+    
     try:
         df = pd.read_csv(io.BytesIO(contents))
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"無法讀取 CSV 檔案，請確認編碼或格式: {str(e)}")
+
+    # Calculate file stats
+    file_stats = {
+        "file_size_bytes": file_size,
+        "file_size_kb": round(file_size / 1024, 2),
+        "row_count": len(df),
+        "column_count": len(df.columns),
+        "column_names": df.columns.tolist()
+    }
 
     # 4. Sensitive Data Check
     sensitive_cols = validation.check_sensitive_data(df)
@@ -53,9 +94,6 @@ async def upload_submission(
     
     status = "validated" if is_valid else "rejected"
     if not is_valid:
-        # We might still want to reject it or save it with errors.
-        # User requirement implies checking fields. We will reject if validation fails for now.
-        # Parse report for better error message
         error_details = []
         if 'errors' in report:
              error_details = report['errors']
@@ -70,15 +108,10 @@ async def upload_submission(
     ).first()
 
     if existing_submission:
-        # Delete the old one so we can replace it (or we could update it)
-        # Replacing is cleaner ID-wise for fresh starts, but updating ID keeps history if we tracked it.
-        # Given requirement "overwrite", deleting old is fine or updating fields.
-        # Let's delete and add new to ensure fresh state.
         db.delete(existing_submission)
         db.commit()
 
     # 7. Save Submission
-    # Convert df to JSON to store
     data_json = df.to_dict(orient="records")
     
     submission = models.Submission(
@@ -94,4 +127,28 @@ async def upload_submission(
     db.commit()
     db.refresh(submission)
     
-    return submission
+    # 8. Generate EDA Report (async in background would be better, but keeping it simple)
+    eda_report_url = generate_eda_report(df, submission.id)
+    
+    # Return response with file stats
+    return {
+        "id": submission.id,
+        "project_id": submission.project_id,
+        "center_name": submission.center_name,
+        "uploader_name": submission.uploader_name,
+        "filename": submission.filename,
+        "upload_date": submission.upload_date,
+        "status": submission.status,
+        "validation_report": submission.validation_report,
+        "file_stats": file_stats,
+        "eda_report_url": eda_report_url
+    }
+
+@router.get("/reports/{filename}")
+async def get_eda_report(filename: str):
+    """Serve EDA report HTML file."""
+    report_path = REPORTS_DIR / filename
+    if not report_path.exists():
+        raise HTTPException(status_code=404, detail="報告不存在")
+    return FileResponse(report_path, media_type="text/html")
+

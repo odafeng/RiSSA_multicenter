@@ -170,13 +170,38 @@ export default function FileUploader() {
                     <CardContent className="pt-6">
                         <div className="flex items-start gap-3">
                             {result.success ? <Check className="text-green-500 mt-1" /> : <X className="text-red-500 mt-1" />}
-                            <div>
-                                <h4 className="font-bold">{result.success ? "成功" : "驗證失敗"}</h4>
+                            <div className="flex-1">
+                                <h4 className="font-bold text-lg">{result.success ? "✅ 上傳成功" : "驗證失敗"}</h4>
                                 <p className="text-sm text-muted-foreground whitespace-pre-wrap mt-1">{result.msg}</p>
-                                {result.report && (
-                                    <pre className="text-xs bg-muted p-2 rounded mt-2 overflow-auto max-h-40">
-                                        {JSON.stringify(result.report, null, 2)}
-                                    </pre>
+
+                                {/* File Stats Display */}
+                                {result.success && result.report?.file_stats && (
+                                    <div className="mt-4 grid grid-cols-3 gap-3">
+                                        <div className="bg-gradient-to-br from-sky-50 to-blue-50 rounded-xl p-4 text-center border border-sky-100">
+                                            <div className="text-2xl font-bold text-sky-600">{result.report.file_stats.file_size_kb}</div>
+                                            <div className="text-xs text-sky-700 font-medium">KB</div>
+                                        </div>
+                                        <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-4 text-center border border-emerald-100">
+                                            <div className="text-2xl font-bold text-emerald-600">{result.report.file_stats.row_count.toLocaleString()}</div>
+                                            <div className="text-xs text-emerald-700 font-medium">筆資料</div>
+                                        </div>
+                                        <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-xl p-4 text-center border border-violet-100">
+                                            <div className="text-2xl font-bold text-violet-600">{result.report.file_stats.column_count}</div>
+                                            <div className="text-xs text-violet-700 font-medium">個欄位</div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* EDA Report Link */}
+                                {result.success && result.report?.eda_report_url && (
+                                    <a
+                                        href={result.report.eda_report_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg font-medium hover:from-indigo-600 hover:to-purple-700 transition-all shadow-md hover:shadow-lg"
+                                    >
+                                        📊 開啟 EDA 分析報告
+                                    </a>
                                 )}
                             </div>
                         </div>
