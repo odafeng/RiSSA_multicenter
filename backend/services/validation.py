@@ -63,30 +63,53 @@ def validate_dataframe(df: pd.DataFrame, schema_structure: Dict[str, Any]) -> Tu
         if len(non_null) == 0:
             continue  # All values are null, skip validation
         
-        # 2. Type validation
-        if col_type in ["int", "integer"]:
-            try:
-                if not pd.api.types.is_numeric_dtype(non_null):
-                    numeric_vals = pd.to_numeric(non_null, errors='raise')
-                else:
-                    numeric_vals = non_null
-                
-                # Check for decimals (should be integers)
-                if not all(numeric_vals == numeric_vals.astype(int)):
-                    errors.append(f"欄位 {col_name} 包含非整數值 (預期: 整數)")
-            except (ValueError, TypeError):
-                errors.append(f"欄位 {col_name} 類型錯誤 (預期: 整數)")
-                continue  # Skip range check if type is wrong
+        # 2. Type validation (supports single type or array of types)
+        col_types = col_type if isinstance(col_type, list) else [col_type]
         
-        elif col_type == "float":
-            try:
-                if not pd.api.types.is_numeric_dtype(non_null):
-                    numeric_vals = pd.to_numeric(non_null, errors='raise')
-                else:
-                    numeric_vals = non_null
-            except (ValueError, TypeError):
-                errors.append(f"欄位 {col_name} 類型錯誤 (預期: 數值)")
+        # Skip type validation for 'any' or 'string' (always passes)
+        if 'any' in col_types or 'string' in col_types:
+            type_valid = True
+        else:
+            type_valid = False
+            type_errors = []
+            
+            for t in col_types:
+                if t in ["int", "integer"]:
+                    try:
+                        if not pd.api.types.is_numeric_dtype(non_null):
+                            numeric_vals = pd.to_numeric(non_null, errors='raise')
+                        else:
+                            numeric_vals = non_null
+                        
+                        # Check for decimals (should be integers)
+                        if all(numeric_vals == numeric_vals.astype(int)):
+                            type_valid = True
+                            break
+                    except (ValueError, TypeError):
+                        type_errors.append("整數")
+                
+                elif t == "float":
+                    try:
+                        if not pd.api.types.is_numeric_dtype(non_null):
+                            pd.to_numeric(non_null, errors='raise')
+                        type_valid = True
+                        break
+                    except (ValueError, TypeError):
+                        type_errors.append("數值")
+                
+                elif t in ["datetime", "date"]:
+                    try:
+                        pd.to_datetime(non_null, errors='raise')
+                        type_valid = True
+                        break
+                    except (ValueError, TypeError):
+                        type_errors.append("日期")
+            
+            if not type_valid:
+                expected = "/".join(type_errors) if type_errors else "/".join(col_types)
+                errors.append(f"欄位 {col_name} 類型錯誤 (預期: {expected})")
                 continue  # Skip range check if type is wrong
+
         
         # 3. Range validation (min/max)
         if col_type in ["int", "integer", "float"] and (min_val is not None or max_val is not None):
