@@ -25,7 +25,6 @@ class ProjectCreate(ProjectBase):
     pass
 
 class ProjectUpdate(BaseModel):
-    name: Optional[str] = None
     download_password: Optional[str] = None
 
 class ProjectResponse(ProjectBase):
@@ -35,13 +34,6 @@ class ProjectResponse(ProjectBase):
 
     class Config:
         from_attributes = True
-
-class FileStats(BaseModel):
-    file_size_bytes: int
-    file_size_kb: float
-    row_count: int
-    column_count: int
-    column_names: List[str]
 
 class SubmissionBase(BaseModel):
     center_name: str
@@ -54,8 +46,6 @@ class SubmissionResponse(SubmissionBase):
     upload_date: datetime
     status: str
     validation_report: Optional[Dict[str, Any]] = None
-    file_stats: Optional[FileStats] = None
-    eda_report_url: Optional[str] = None
 
     class Config:
         from_attributes = True
