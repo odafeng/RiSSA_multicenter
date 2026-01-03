@@ -1,4 +1,5 @@
 import Link from "next/link";
+import DataDownloader from "@/components/DataDownloader";
 import { ArrowRight, Database, ShieldCheck, FileText, Sparkles } from "lucide-react";
 
 export default function Home() {
@@ -78,6 +79,11 @@ export default function Home() {
                   下載資料範本
                 </a>
               </div>
+            </div>
+
+            <div className="mt-8 pt-8 border-t border-slate-100">
+              <h4 className="text-lg font-semibold text-slate-800 mb-4">合併資料下載 (需密碼)</h4>
+              <DataDownloader />
             </div>
           </div>
         </div>
